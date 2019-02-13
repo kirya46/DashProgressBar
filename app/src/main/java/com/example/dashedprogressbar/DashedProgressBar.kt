@@ -1,12 +1,12 @@
 package com.example.dashedprogressbar
 
+import android.animation.Animator
+import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Path
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 
 /**
  * Created by Kirill Stoianov on 2/13/19.
@@ -66,12 +66,44 @@ class DashedProgressBar(context: Context, attributeSet: AttributeSet?, def: Int)
         }
     }
 
+    private val excludePaint by lazy {
+        Paint().apply {
+            xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
+        }
+    }
+
     private val backgroundPaint by lazy {
         Paint().apply {
             color = dashBackgroundColor
             isAntiAlias = true
         }
     }
+
+    private var filledWidth: Float = 0f
+
+    private var animator = ValueAnimator()
+
+    fun increase() {
+        animator.removeAllUpdateListeners()
+        animator.removeAllListeners()
+        animator.cancel()
+
+        currentDashCount += 1
+
+        val newFilledWidth = when (currentDashCount) {
+            1 -> filledWidth + getDashWidth()+getDashSeparatorWidth()
+            else -> {
+                filledWidth +(((getDashWidth() * (currentDashCount-1)) + (getDashSeparatorWidth() * (currentDashCount-1))-filledWidth))
+            }
+        }
+
+        animator.setFloatValues(filledWidth, newFilledWidth)
+        animator.addUpdateListener { filledWidth = it.animatedValue as Float }
+        animator.duration = 300
+        animator.interpolator = AccelerateDecelerateInterpolator()
+        animator.start()
+    }
+
 
     constructor(context: Context) : this(context, null, 0)
     constructor(context: Context, attributeSet: AttributeSet?) : this(context, attributeSet, 0)
@@ -95,14 +127,49 @@ class DashedProgressBar(context: Context, attributeSet: AttributeSet?, def: Int)
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         canvas?.apply {
-            drawDashes(this)
+            drawBackground(this)
+            drawFilled(this)
+            drawPunktirs(this)
+//            drawMask(this)
         }
     }
 
-    fun increaseCount() {
-        currentDashCount += 1
+    private fun drawBackground(canvas: Canvas) {
+        val backgroundRect = getRoundRect(
+            0f, 0f, width.toFloat(), height.toFloat(), getCornerRadius(), getCornerRadius(),
+            true, true, true, true
+        )
+        canvas.drawPath(backgroundRect, backgroundPaint)
     }
 
+    private fun drawFilled(canvas: Canvas) {
+        val backgroundRect = getRoundRect(
+            0f, 0f, filledWidth, height.toFloat(), getCornerRadius(), getCornerRadius(),
+            true, true, true, true
+        )
+        canvas.drawPath(backgroundRect, dashPaint)
+    }
+
+    private fun drawPunktirs(canvas: Canvas) {
+        (1..maxDashCount).forEach { number ->
+            val dashLeft = getDashWidth() * number
+            val backgroundRect = getRoundRect(
+                dashLeft,
+                0f,
+                dashLeft + getDashSeparatorWidth(),
+                height.toFloat(),
+                getCornerRadius(),
+                getCornerRadius(),
+                false,
+                false,
+                false,
+                false
+            )
+            canvas.drawPath(backgroundRect, excludePaint)
+        }
+    }
+
+    @Deprecated("")
     private fun drawDashes(canvas: Canvas) {
 
         (1..maxDashCount).forEach { dashNumber ->
@@ -155,11 +222,11 @@ class DashedProgressBar(context: Context, attributeSet: AttributeSet?, def: Int)
     private fun getCornerRadius(): Float = Math.min(width, height) / 1.5f
 
     private fun getDashWidth(): Float {
-        return (width / maxDashCount) - getDashSeparatorWidth()
+        return (width / maxDashCount) - getCornerRadius()
     }
 
     private fun getDashSeparatorWidth(): Float {
-        return ((width / maxDashCount) / 8f)
+        return getCornerRadius()
     }
 
     private fun getPaintForDash(dashNumber: Int): Paint {

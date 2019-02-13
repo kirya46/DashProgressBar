@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
-           progressBar.increaseCount()
+           progressBar.increase()
         }
 
 //        progressBar.maxDashCount = 7
