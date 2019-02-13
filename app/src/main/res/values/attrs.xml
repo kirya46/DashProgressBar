@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="DashedProgressBar">
+        <attr name="dashBackgroundColor" format="color"/>
+        <attr name="dashColor" format="color"/>
+        <attr name="maxDashCount" format="integer"/>
+        <attr name="currentDashCount" format="integer"/>
+    </declare-styleable>
+</resources>
