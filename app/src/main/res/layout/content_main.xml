@@ -14,8 +14,8 @@
             android:layout_width="match_parent"
             android:layout_height="8dp"
             android:layout_margin="32dp"
-            app:maxDashCount="5"
-            app:currentDashCount="0"
+            app:maxDashCount="7"
+            app:currentDashCount="3"
             app:dashBackgroundColor="@color/colorPrimary"
             app:dashColor="@color/colorAccent"
     />

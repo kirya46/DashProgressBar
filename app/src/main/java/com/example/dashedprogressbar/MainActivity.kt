@@ -1,11 +1,9 @@
 package com.example.dashedprogressbar
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
@@ -18,16 +16,12 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
-            progressBar.currentDashCount += progressBar.currentDashCount+1
+            progressBar.currentDashCount += 1
         }
 
         fab2.setOnClickListener {
-            progressBar.currentDashCount -= progressBar.currentDashCount-1
+            progressBar.currentDashCount -= 1
         }
-
-
-//        progressBar.maxDashCount = 7
-//        progressBar.currentDashCount = 3
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
