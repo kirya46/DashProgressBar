@@ -13,6 +13,15 @@ import android.view.animation.AccelerateDecelerateInterpolator
  * Dashed progress bar.
  *
  * Looks like: - - - - - - -
+ *
+ * Support next attributes from xml.
+ *
+ * <code>
+ *      <attr name="dashBackgroundColor" format="color"/>
+ *      <attr name="dashColor" format="color"/>
+ *      <attr name="maxDashCount" format="integer"/>
+ *      <attr name="currentDashCount" format="integer"/>
+ * </code>
  */
 class DashedProgressBar(context: Context, attributeSet: AttributeSet?, def: Int) : View(context, attributeSet, def) {
 
