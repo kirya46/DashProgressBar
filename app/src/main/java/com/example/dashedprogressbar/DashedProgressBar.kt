@@ -7,6 +7,7 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.AccelerateInterpolator
 
 /**
  * Created by Kirill Stoianov on 2/13/19.
@@ -63,6 +64,7 @@ class DashedProgressBar(context: Context, attributeSet: AttributeSet?, def: Int)
         Paint().apply {
             color = dashColor
             isAntiAlias = true
+            xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
         }
     }
 
@@ -90,16 +92,20 @@ class DashedProgressBar(context: Context, attributeSet: AttributeSet?, def: Int)
 
         currentDashCount += 1
 
+        val cornerOffset = getDashSeparatorWidth()/2f
         val newFilledWidth = when (currentDashCount) {
-            1 -> filledWidth + getDashWidth()+getDashSeparatorWidth()
+            1 -> filledWidth + getDashWidth() + getDashSeparatorWidth()+cornerOffset
             else -> {
-                filledWidth +(((getDashWidth() * (currentDashCount-1)) + (getDashSeparatorWidth() * (currentDashCount-1))-filledWidth))
+                filledWidth +cornerOffset+ (((getDashWidth() * (currentDashCount - 1)) + (getDashSeparatorWidth() * (currentDashCount - 1)) - filledWidth))
             }
         }
 
         animator.setFloatValues(filledWidth, newFilledWidth)
-        animator.addUpdateListener { filledWidth = it.animatedValue as Float }
-        animator.duration = 300
+        animator.addUpdateListener {
+            filledWidth = it.animatedValue as Float
+            invalidate()
+        }
+        animator.duration = 500
         animator.interpolator = AccelerateDecelerateInterpolator()
         animator.start()
     }
@@ -130,7 +136,6 @@ class DashedProgressBar(context: Context, attributeSet: AttributeSet?, def: Int)
             drawBackground(this)
             drawFilled(this)
             drawPunktirs(this)
-//            drawMask(this)
         }
     }
 
@@ -152,7 +157,8 @@ class DashedProgressBar(context: Context, attributeSet: AttributeSet?, def: Int)
 
     private fun drawPunktirs(canvas: Canvas) {
         (1..maxDashCount).forEach { number ->
-            val dashLeft = getDashWidth() * number
+            if (number==maxDashCount)return
+            val dashLeft = (getDashWidth() + getDashSeparatorWidth()) * number
             val backgroundRect = getRoundRect(
                 dashLeft,
                 0f,

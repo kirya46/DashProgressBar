@@ -18,8 +18,13 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
-           progressBar.increase()
+            progressBar.currentDashCount += progressBar.currentDashCount+1
         }
+
+        fab2.setOnClickListener {
+            progressBar.currentDashCount -= progressBar.currentDashCount-1
+        }
+
 
 //        progressBar.maxDashCount = 7
 //        progressBar.currentDashCount = 3
