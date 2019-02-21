@@ -127,6 +127,11 @@ class DashedProgressBar(context: Context, attributeSet: AttributeSet?, def: Int)
         }
     }
 
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        cancelAnimation()
+    }
+
     private fun drawBackground(canvas: Canvas) {
         val backgroundRect = getRoundRect(
             0f, 0f, width.toFloat(), height.toFloat(), getCornerRadius(), getCornerRadius(),
@@ -173,9 +178,8 @@ class DashedProgressBar(context: Context, attributeSet: AttributeSet?, def: Int)
     }
 
     private fun animateProgress() {
-        animator.removeAllUpdateListeners()
-        animator.removeAllListeners()
-        animator.cancel()
+
+        cancelAnimation()
 
         //corner offset need because in dash without rounded corners
         //filled progress Path has rounded corners and it looks ugly
@@ -191,6 +195,12 @@ class DashedProgressBar(context: Context, attributeSet: AttributeSet?, def: Int)
         animator.duration = 500
         animator.interpolator = AccelerateDecelerateInterpolator()
         animator.start()
+    }
+
+    private fun cancelAnimation() {
+        animator.removeAllUpdateListeners()
+        animator.removeAllListeners()
+        animator.cancel()
     }
 
     private fun getRoundRect(
